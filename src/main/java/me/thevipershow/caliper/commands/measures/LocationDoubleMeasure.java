@@ -2,6 +2,7 @@ package me.thevipershow.caliper.commands.measures;
 
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class LocationDoubleMeasure extends MeasurableDoubleDistance<Location>  {
 
@@ -13,7 +14,7 @@ public class LocationDoubleMeasure extends MeasurableDoubleDistance<Location>  {
      * @param second The second location.
      *
      */
-    public LocationDoubleMeasure(@NotNull Location first, @NotNull Location second) {
+    public LocationDoubleMeasure(@Nullable Location first, @Nullable Location second) {
         super(first, second);
     }
 

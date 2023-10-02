@@ -15,7 +15,7 @@ public class MeasuresCommand extends AbstractCaliperNameCommand {
      *
      * @param caliper The plugin instance after initialisation.
      */
-    protected MeasuresCommand(@NotNull Caliper caliper) {
+    public MeasuresCommand(@NotNull Caliper caliper) {
         super(caliper);
     }
 

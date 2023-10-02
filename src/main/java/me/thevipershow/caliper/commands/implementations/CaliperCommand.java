@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.thevipershow.caliper.Caliper;
 import me.thevipershow.caliper.commands.AbstractCaliperNameCommand;
 import me.thevipershow.caliper.commands.measures.MeasurableDoubleDistance;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
         super(caliper);
     }
 
-    private final Map<UUID, LinkedList<MeasurableDoubleDistance<?>>> measuresMap = new HashMap<>();
+    private final Map<UUID, LinkedList<MeasurableDoubleDistance<Location>>> measuresMap = new HashMap<>();
     private final Set<UUID> caliperModePlayers = new HashSet<>();
 
     /**
@@ -36,12 +37,14 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
      * @return A LinkedList of MeasurableDoubleDistance<?> associated with the player.
      */
     @NotNull
-    private LinkedList<MeasurableDoubleDistance<?>> getPlayerMeasuresOrAdd(@NotNull Player player) {
+    public LinkedList<MeasurableDoubleDistance<Location>> getPlayerMeasuresOrAdd(@NotNull Player player) {
         UUID playerUUID = player.getUniqueId();
-        LinkedList<MeasurableDoubleDistance<?>> measures = this.measuresMap.get(playerUUID);
+        LinkedList<MeasurableDoubleDistance<Location>> measures = this.measuresMap.get(playerUUID);
         if (measures != null)
             return measures;
-        this.measuresMap.put(playerUUID, measures = new LinkedList<>());
+
+        measures = new LinkedList<>();
+        this.measuresMap.put(playerUUID, measures);
         return measures;
     }
 
@@ -51,8 +54,11 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
      * @return The measure, may be null.
      */
     @Nullable
-    private MeasurableDoubleDistance<?> getPlayerLastMeasure(@NotNull Player player) {
-        return getPlayerMeasuresOrAdd(player).getLast();
+    public MeasurableDoubleDistance<Location> getPlayerLastMeasure(@NotNull Player player) {
+        LinkedList<MeasurableDoubleDistance<Location>> playerMeasures = getPlayerMeasuresOrAdd(player);
+        if (playerMeasures.isEmpty())
+            return null;
+        return playerMeasures.getLast();
     }
 
     /**

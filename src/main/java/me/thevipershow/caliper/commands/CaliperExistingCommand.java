@@ -39,10 +39,10 @@ public enum CaliperExistingCommand implements AbstractCaliperCommandConvert {
     @Override
     public @NotNull <T extends AbstractCaliperNameCommand> T newCommand(@NotNull Caliper caliper) {
         try {
-            final Constructor<T> constructor = (Constructor<T>) this.commandNameClass.getDeclaredConstructor();
+            Constructor<T> constructor = (Constructor<T>) this.commandNameClass.getDeclaredConstructors()[0];
             return constructor.newInstance(caliper);
-        } catch (NoSuchMethodException | ClassCastException | InvocationTargetException | IllegalAccessException | InstantiationException ignored) {
-            // will never reach.
+        } catch (ClassCastException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
         }
         return null; // code will never reach.
     }
