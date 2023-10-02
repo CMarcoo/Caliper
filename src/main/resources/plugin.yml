@@ -1,0 +1,6 @@
+name: Caliper
+version: '${project.version}'
+main: me.thevipershow.caliper.Caliper
+api-version: '1.20'
+authors: [CMarco_, TheViperShow]
+description: Make accurate measures!
