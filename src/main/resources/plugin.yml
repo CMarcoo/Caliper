@@ -1,6 +1,11 @@
 name: Caliper
 version: '${project.version}'
 main: me.thevipershow.caliper.Caliper
-api-version: '1.20'
+api-version: '1.13'
 authors: [CMarco_, TheViperShow]
 description: Make accurate measures!
+commands:
+  caliper:
+    description: 'Start making your measures!'
+  measures:
+    description: 'Check your measures!'

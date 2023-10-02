@@ -1,6 +1,7 @@
-package me.thevipershow.caliper.commands;
+package me.thevipershow.caliper.commands.implementations;
 
 import me.thevipershow.caliper.Caliper;
+import me.thevipershow.caliper.commands.AbstractCaliperNameCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
