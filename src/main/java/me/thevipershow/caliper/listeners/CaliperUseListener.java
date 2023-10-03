@@ -23,7 +23,7 @@ import java.util.*;
 public class CaliperUseListener implements Listener {
 
     private final CaliperCommand caliperCommand;
-    private final Map<UUID, Collection<BukkitTask>> activeRenderings = new HashMap<>();
+    private final Caliper caliper;
 
     /**
      * Main constructor for the CaliperUseListener class.
@@ -31,25 +31,19 @@ public class CaliperUseListener implements Listener {
      */
     public CaliperUseListener(@NotNull CaliperCommand caliperCommand) {
         this.caliperCommand = caliperCommand;
+        this.caliper = caliperCommand.getCaliper();
     }
 
     private void addPlayerRendering(@NotNull Player player, @NotNull BukkitTask bukkitTask) {
         UUID uuid = player.getUniqueId();
-        if (!activeRenderings.containsKey(uuid)) {
+
+        if (!caliper.getPlayerCaliperData().getActiveRenderings().containsKey(uuid)) {
             final Collection<BukkitTask> tasks = new HashSet<>();
             tasks.add(bukkitTask);
-            activeRenderings.put(uuid, tasks);
+            caliper.getPlayerCaliperData().getActiveRenderings().put(uuid, tasks);
             return;
         }
-        activeRenderings.get(uuid).add(bukkitTask);
-    }
-
-    private void stopAllRenderings(@NotNull Player player) {
-        UUID uuid = player.getUniqueId();
-        if (!activeRenderings.containsKey(uuid)) return;
-        activeRenderings.get(uuid).forEach(task -> {
-            if (!task.isCancelled()) task.cancel();
-        });
+        caliper.getPlayerCaliperData().getActiveRenderings().get(uuid).add(bukkitTask);
     }
 
     private void startMeasuringAnimation(@NotNull Player player, @NotNull MeasurableDoubleDistance<Location> measure) {
@@ -71,7 +65,7 @@ public class CaliperUseListener implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
         Block clickedBlock = event.getClickedBlock();
-        if (!caliperCommand.getCaliperModePlayers().contains(playerUUID)) return; // Only caliper ENABLED players
+        if (!caliperCommand.getCaliper().getPlayerCaliperData().getCaliperModePlayers().contains(playerUUID)) return; // Only caliper ENABLED players
         if (clickedBlock == null) return; // Needs to be a valid block.
         Location loc = clickedBlock.getLocation().clone().add(0x0.8p+0d,0x0.8p+0d,0x0.8p+0d);
         MeasurableDoubleDistance<Location> lastMeasure = caliperCommand.getPlayerLastMeasure(player);

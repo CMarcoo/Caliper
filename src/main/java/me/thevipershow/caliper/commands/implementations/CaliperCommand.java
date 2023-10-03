@@ -1,6 +1,5 @@
 package me.thevipershow.caliper.commands.implementations;
 
-import lombok.Getter;
 import me.thevipershow.caliper.Caliper;
 import me.thevipershow.caliper.commands.AbstractCaliperNameCommand;
 import me.thevipershow.caliper.commands.measures.MeasurableDoubleDistance;
@@ -17,7 +16,6 @@ import java.util.*;
  * Main command class of this plugin.
  * Responsible for the "/caliper" command.
  */
-@Getter
 public class CaliperCommand extends AbstractCaliperNameCommand {
 
     /**
@@ -28,9 +26,6 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
         super(caliper);
     }
 
-    private final Map<UUID, LinkedList<MeasurableDoubleDistance<Location>>> measuresMap = new HashMap<>();
-    private final Set<UUID> caliperModePlayers = new HashSet<>();
-
     /**
      * Get the measures associated to a given Player (should be online!)
      * @param player The player.
@@ -39,12 +34,13 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
     @NotNull
     public LinkedList<MeasurableDoubleDistance<Location>> getPlayerMeasuresOrAdd(@NotNull Player player) {
         UUID playerUUID = player.getUniqueId();
-        LinkedList<MeasurableDoubleDistance<Location>> measures = this.measuresMap.get(playerUUID);
+        Map<UUID, LinkedList<MeasurableDoubleDistance<Location>>> measureData = caliper.getPlayerCaliperData().getMeasuresMap();
+        LinkedList<MeasurableDoubleDistance<Location>> measures = measureData.get(playerUUID);
         if (measures != null)
             return measures;
 
         measures = new LinkedList<>();
-        this.measuresMap.put(playerUUID, measures);
+        measureData.put(playerUUID, measures);
         return measures;
     }
 
@@ -74,12 +70,20 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
      * @param player The Player.
      */
     private void caliperModeEnableCommand(@NotNull Player player) {
-        if (caliperModePlayers.contains(player.getUniqueId())) {
+        if (caliper.getPlayerCaliperData().getCaliperModePlayers().contains(player.getUniqueId())) {
             player.sendMessage(Caliper.CALIPER_PREFIX + "§aYou are already into Caliper Mode!");
             return;
         }
-        caliperModePlayers.add(player.getUniqueId());
+        caliper.getPlayerCaliperData().getCaliperModePlayers().add(player.getUniqueId());
         player.sendMessage(Caliper.CALIPER_PREFIX + "§aYou have successfully enable Caliper Mode!");
+    }
+
+    private void stopAllRenderings(@NotNull Player player) {
+        UUID uuid = player.getUniqueId();
+        if (!caliper.getPlayerCaliperData().getActiveRenderings().containsKey(uuid)) return;
+        caliper.getPlayerCaliperData().getActiveRenderings().get(uuid).forEach(task -> {
+            if (!task.isCancelled()) task.cancel();
+        });
     }
 
     /**
@@ -87,9 +91,10 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
      * @param player The Player.
      */
     private void caliperModeDisableCommand(@NotNull Player player) {
-        if (caliperModePlayers.contains(player.getUniqueId())) {
+        if (caliper.getPlayerCaliperData().getCaliperModePlayers().contains(player.getUniqueId())) {
             player.sendMessage(Caliper.CALIPER_PREFIX + "§aYou have disabled Caliper Mode!");
-            caliperModePlayers.remove(player.getUniqueId());
+            caliper.getPlayerCaliperData().getCaliperModePlayers().remove(player.getUniqueId());
+            stopAllRenderings(player);
             return;
         }
         player.sendMessage(Caliper.CALIPER_PREFIX + "§aYou are not in Caliper Mode!");
@@ -109,6 +114,7 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
                 caliperModeDisableCommand(player);
                 break;
             default:
+                player.sendMessage("§cUnknown argument for caliper command!");
                 break;
         }
     }

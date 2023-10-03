@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class AbstractCaliperNameCommand implements CommandName, CommandExecutor, SelfRegisteringCommand {
 
-    @Getter(AccessLevel.PUBLIC) private final Caliper caliper;
+    @Getter(AccessLevel.PUBLIC) protected final Caliper caliper;
 
 
     /**

@@ -1,18 +1,22 @@
 package me.thevipershow.caliper;
 
+import lombok.Getter;
 import me.thevipershow.caliper.commands.CaliperExistingCommand;
 import me.thevipershow.caliper.commands.implementations.CaliperCommand;
 import me.thevipershow.caliper.commands.implementations.MeasuresCommand;
+import me.thevipershow.caliper.commands.measures.PlayerCaliperData;
 import me.thevipershow.caliper.listeners.CaliperUseListener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@Getter
 public final class Caliper extends JavaPlugin {
 
     public static final String CALIPER_PREFIX = "§7[§6Caliper§7]§f: ";
     private CaliperCommand caliperCommand;
     private MeasuresCommand measuresCommand;
     private CaliperUseListener caliperUseListener;
+    private final PlayerCaliperData playerCaliperData = new PlayerCaliperData();
 
     /**
      * Registers all the available command for this server.
