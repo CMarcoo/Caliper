@@ -69,7 +69,7 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
      * Enables caliper mode for this Player.
      * @param player The Player.
      */
-    private void caliperModeEnableCommand(@NotNull Player player) {
+    public void caliperModeEnableCommand(@NotNull Player player) {
         if (caliper.getPlayerCaliperData().getCaliperModePlayers().contains(player.getUniqueId())) {
             player.sendMessage(Caliper.CALIPER_PREFIX + "§aYou are already into Caliper Mode!");
             return;
@@ -78,7 +78,7 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
         player.sendMessage(Caliper.CALIPER_PREFIX + "§aYou have successfully enable Caliper Mode!");
     }
 
-    private void stopAllRenderings(@NotNull Player player) {
+    public void stopAllRenderings(@NotNull Player player) {
         UUID uuid = player.getUniqueId();
         if (!caliper.getPlayerCaliperData().getActiveRenderings().containsKey(uuid)) return;
         caliper.getPlayerCaliperData().getActiveRenderings().get(uuid).forEach(task -> {
@@ -90,7 +90,7 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
      * Disables caliper mode for this Player.
      * @param player The Player.
      */
-    private void caliperModeDisableCommand(@NotNull Player player) {
+    public void caliperModeDisableCommand(@NotNull Player player) {
         if (caliper.getPlayerCaliperData().getCaliperModePlayers().contains(player.getUniqueId())) {
             player.sendMessage(Caliper.CALIPER_PREFIX + "§aYou have disabled Caliper Mode!");
             caliper.getPlayerCaliperData().getCaliperModePlayers().remove(player.getUniqueId());
@@ -119,8 +119,26 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
         }
     }
 
+    /**
+     * The help menu for the caliper command
+     * @param sender The command sender.
+     */
+    private static void sendHelp(CommandSender sender) {
+        sender.sendMessage(Caliper.CALIPER_PREFIX + "Help Menu");
+        sender.sendMessage("§7Enables the measuring mode:");
+        sender.sendMessage("§7Click on a first and second block to measure their distance.");
+        sender.sendMessage("§e/caliper enable");
+        sender.sendMessage("§7Disables measuring mode and animations.");
+        sender.sendMessage("§e/caliper disable");
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, String[] strings) {
+        if (strings.length == 0) {
+            sendHelp(commandSender);
+            return false;
+        }
+
         if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage(Caliper.CALIPER_PREFIX + "§cYou cannot use this command from the server console");
             return false;
@@ -133,6 +151,8 @@ public class CaliperCommand extends AbstractCaliperNameCommand {
 
         if (strings.length == 1)
             singleArgsCaliperCommand(player, strings[0]);
+        else
+            unknownCommandMessage(player);
 
         return false;
     }
